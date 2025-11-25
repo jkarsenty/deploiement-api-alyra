@@ -1,7 +1,10 @@
 from flask import Flask, jsonify, request
-from model import analyze_sentiment
+from model import load_model, predict
 
 app = Flask(__name__)
+
+# model loading
+model = load_model()
 
 @app.route('/')
 def home():
@@ -18,7 +21,8 @@ def predict_sentiment():
         return jsonify({"error": "Invalid input, 'text' field is required."}), 400
 
     text = data['text']
-    result = analyze_sentiment(text)
+    result = predict(model, text)
+    
     return jsonify(result)
 
 if __name__ == '__main__':
