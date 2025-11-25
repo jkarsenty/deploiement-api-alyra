@@ -8,7 +8,7 @@ model = load_model()
 
 @app.route('/')
 def home():
-    return "Welcome to the Alyra Deployment API!"
+    return "Welcome to the Alyra Deployment API! from"
 
 @app.route('/health', methods=['GET'])
 def health_check():
