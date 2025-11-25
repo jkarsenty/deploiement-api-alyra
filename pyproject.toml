@@ -1,0 +1,18 @@
+[project]
+name = "ml-deployment-api"
+version = "0.1.0"
+description = "API de déploiement d'un modèle de Machine Learning avec flask"
+authors = [
+    { name = "jika"}
+]
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "flask>=3.0.0",
+    "scikit-learn>=1.7.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+

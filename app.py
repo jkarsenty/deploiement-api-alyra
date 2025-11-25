@@ -8,11 +8,11 @@ model = load_model()
 
 @app.route('/')
 def home():
-    return "Welcome to the Alyra Deployment API! from"
+    return "Welcome to the Alyra Deployment API!"
 
 @app.route('/health', methods=['GET'])
 def health_check():
-    return jsonify({"status": "healthy", "message": "API is running smoothly."})
+    return jsonify({"status": "healthy", "message": "API is running smoothly.", "config": "uv+pyproject.toml"})
 
 @app.route('/predict', methods=['POST'])
 def predict_sentiment():
