@@ -1,45 +1,48 @@
-import re 
+from typing import Dict, Any
 
-POSITVE_WORDS = {
-    "good", "great", "excellent", "amazing", "fantastic", "love", "like", "happy", "joy", "wonderful"
-}
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.linear_model import LogisticRegression
+from sklearn.pipeline import Pipeline
 
-NEGATIVE_WORDS = {
-    "bad", "terrible", "awful", "hate", "dislike", "sad", "angry", "horrible", "worst", "pain"
-}
+_model = None # cache du modele en memoire
 
-def _normalize_text(text):
-    """Normalize text by converting to lowercase and removing non-alphanumeric characters."""
-    text = text.lower()
-    words = re.findall(r'\w+', text, flags=re.UNICODE)
-    return words
+def _train_dummy_model() -> Pipeline:
+    # Entraine un modele dummy pour l'exemple
+    texts = [
+        "I love this product!",
+        "This is the worst service ever.",
+        "Absolutely fantastic experience.",
+        "I will never buy this again.",
+    ]
+    labels = [1, 0, 1, 0]  # 1: positif, 0: negatif
+
+    pipeline = Pipeline([
+        ('tfidf', TfidfVectorizer()),
+        ('clf', LogisticRegression())
+    ])
+
+    pipeline.fit(texts, labels)
+    return pipeline
 
 
-def analyze_sentiment(text):
-    """Analyze the sentiment of the given text.
+def load_model() -> Pipeline:
+    global _model
+    if _model is None:
+        _model = _train_dummy_model()
+    return _model
 
-    Args:
-        text (str): The input text to analyze.
 
-    Returns:
-        dict: A dictionary with counts of positive and negative words.
-    """
-    words = _normalize_text(text)
-    has_positive = any(word in POSITVE_WORDS for word in words)
-    has_negative = any(word in NEGATIVE_WORDS for word in words)
+def predict(model: Pipeline, text: str) -> int:
+    prediction = model.predict_proba([text])[0]
+    classes = model.classes_
 
-    if has_positive and not has_negative:
-        label = "positive"
-    elif has_negative and not has_positive:
-        label = "negative"
-    else:
-        label = "neutral"
+    best_idx = prediction.argmax()
+    label = classes[best_idx]
+    confidence = float(prediction[best_idx])
 
-    
     return {
-        "label": label,
-        "detail": {
-            "positive_word_found": [word for word in words if word in POSITVE_WORDS],
-            "negative_word_found": [word for word in words if word in NEGATIVE_WORDS]
-        }
+        "input_text": text,
+        "label": int(label),
+        "confidence": confidence,
+        "all_probabilities": {str(cls): float(prob) for cls, prob in zip(classes, prediction)}
     }
