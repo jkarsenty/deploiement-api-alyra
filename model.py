@@ -37,12 +37,17 @@ def predict(model: Pipeline, text: str) -> int:
     classes = model.classes_
 
     best_idx = prediction.argmax()
-    label = classes[best_idx]
+    label_bool = classes[best_idx]
     confidence = float(prediction[best_idx])
+
+    if label_bool == 1:
+        label = "positive"
+    else:
+        label = "negative"
 
     return {
         "input_text": text,
-        "label": int(label),
+        "label": label,
         "confidence": confidence,
         "all_probabilities": {str(cls): float(prob) for cls, prob in zip(classes, prediction)}
     }
