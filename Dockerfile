@@ -1,28 +1,33 @@
-# image de base
 FROM python:3.11-slim
 
 WORKDIR /app
 
-# Dépendances système nécessaires à sklearn
-#RUN apt-get update && apt-get install -y build-essential && rm -rf /var/lib/apt/lists/*
+# (Optionnel mais recommandé si tu utilises scikit-learn ou autres libs compilées)
+RUN apt-get update && apt-get install -y build-essential && rm -rf /var/lib/apt/lists/*
 
+# Installer uv
 RUN pip install --no-cache-dir uv
 
-COPY pyproject.toml ./
-# COPY uv.lock ./
+# Copier le fichier de config des deps
+COPY pyproject.toml .
 
-# installation des dépendances dans un environnement gérer par uv
+# Installer les dépendances (sans extras dev)
 RUN uv sync --no-dev
 
-COPY . .
+# Copier le code de l'application et les modèles
+COPY app ./app
+COPY model ./model
 
-# Variable d'env Flask
-ENV FLASK_APP=app.py
-ENV FLASK_RUN_HOST=0.0.0.0
-ENV FLASK_RUN_PORT=5000
+# (éventuels autres fichiers)
+# COPY tests ./tests
+# COPY README.md .
 
-EXPOSE 5000
+# Variables d'env pour FastAPI / uvicorn
+ENV HOST=0.0.0.0
+ENV PORT=8000
 
-# on utilise uv pour lancer l'application flask dans l'environnement géré par uv
-CMD ["uv", "run", "flask", "run"]
+EXPOSE 8000
 
+# Lancement de l'API FastAPI avec uvicorn
+# On suppose que dans app/app.py tu as: app = FastAPI(...)
+CMD ["uv", "run", "uvicorn", "app.app:app", "--host", "0.0.0.0", "--port", "8000"]

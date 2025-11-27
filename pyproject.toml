@@ -1,15 +1,14 @@
 [project]
-name = "ml-deployment-api"
+name = "ml-deployment-fastapi"
 version = "0.1.0"
-description = "API de déploiement d'un modèle de Machine Learning avec flask"
-authors = [
-    { name = "jika"}
-]
-readme = "README.md"
+description = "API FastAPI de classification de sentiments"
 requires-python = ">=3.11"
 dependencies = [
-    "flask>=3.0.0",
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.30.0",
     "scikit-learn>=1.5.0",
+    "numpy>=1.26.0",
+    "pydantic>=2.7.0",
 ]
 
 [project.optional-dependencies]
@@ -17,5 +16,6 @@ dev = [
     "pytest>=8.0.0",
 ]
 
+# Si utilisation de pytest.ini tu peux aussi configurer ici :
 [tool.pytest.ini_options]
 pythonpath = ["."]
